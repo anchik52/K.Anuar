@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Page</title>
+    <style>
+        body {
+            background-color: lightblue;
+            color: black;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            transition: background-color 0.5s;
+        }
+
+        .dark-mode {
+            background-color: #222;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #langButton {
+            background-color: green;
+            color: white;
+        }
+
+        #darkModeButton {
+            background-color: black;
+            color: white;
+        }
+
+        h1 {
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <h1 id="text">I love films</h1>
+    <button id="langButton" onclick="toggleLanguage()">Switch to Russian</button>
+    <button id="darkModeButton" onclick="toggleDarkMode()">Dark Mode</button>
+
+    <script>
+        let isEnglish = true;
+        let isDarkMode = false;
+
+        function toggleLanguage() {
+            let textElement = document.getElementById("text");
+            let langButton = document.getElementById("langButton");
+
+            if (isEnglish) {
+                textElement.textContent = "Я люблю фильмы";
+                langButton.textContent = "Switch to English";
+            } else {
+                textElement.textContent = "I love films";
+                langButton.textContent = "Switch to Russian";
+            }
+            isEnglish = !isEnglish;
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+            let darkModeButton = document.getElementById("darkModeButton");
+
+            if (isDarkMode) {
+                darkModeButton.textContent = "Dark Mode";
+            } else {
+                darkModeButton.textContent = "Light Mode";
+            }
+            isDarkMode = !isDarkMode;
+        }
+    </script>
+</body>
+</html>
