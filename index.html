@@ -1,58 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <title>Text Search App (JavaScript Version)</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 2em; }
-    textarea, input, button { width: 100%; padding: 10px; margin-top: 10px; }
-    pre { background: #f0f0f0; padding: 10px; white-space: pre-wrap; }
-  </style>
+    <meta charset="UTF-8">
+    <title>Подсветка слова</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #d3f6d1; }
+        textarea, input { width: 100%; margin-top: 10px; padding: 8px; font-size: 16px; }
+        button { margin-top: 10px; padding: 10px 20px; font-size: 16px; }
+        #result { margin-top: 20px; white-space: pre-wrap; }
+    </style>
 </head>
 <body>
-  <h1>Text Search App (JavaScript)</h1>
+    <h2>Загрузите текст и подсветите слово</h2>
+    <textarea id="text" rows="10" placeholder="Введите текст..."></textarea>
+    <input type="text" id="word" placeholder="Введите слово...">
+    <button onclick="highlight()">Подсветить</button>
+    <div id="result"></div>
 
-  <textarea id="text-input" placeholder="Paste your text here..." rows="10"></textarea>
-  <input id="query-input" type="text" placeholder="Enter search query (e.g., python AND java)">
-  <button onclick="runSearch()">Search</button>
+    <script>
+        function highlight() {
+            const text = document.getElementById('text').value;
+            const word = document.getElementById('word').value;
 
-  <h3>Results:</h3>
-  <pre id="output"></pre>
+            const formData = new FormData();
+            formData.append('text', text);
+            formData.append('word', word);
 
-  <script>
-    function cleanLine(line) {
-      return line.trim().toLowerCase().replace(/[.,]/g, '');
-    }
-
-    function searchText(lines, query) {
-      query = query.trim().toLowerCase();
-      let results = [];
-
-      if (query.includes(" and ")) {
-        let terms = query.split(" and ");
-        results = lines.filter(line => terms.every(term => line.includes(term)));
-      } else if (query.includes(" or ")) {
-        let terms = query.split(" or ");
-        results = lines.filter(line => terms.some(term => line.includes(term)));
-      } else if (query.includes(" not ")) {
-        let [term1, term2] = query.split(" not ");
-        results = lines.filter(line => line.includes(term1) && !line.includes(term2));
-      } else {
-        results = lines.filter(line => line.includes(query));
-      }
-
-      return results;
-    }
-
-    function runSearch() {
-      const textInput = document.getElementById("text-input").value;
-      const query = document.getElementById("query-input").value;
-      const lines = textInput.split("\n").map(cleanLine);
-      const results = searchText(lines, query);
-
-      const output = results.length > 0 ? results.join("\n") : "No matches found.";
-      document.getElementById("output").textContent = output;
-    }
-  </script>
+            fetch('/highlight', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').innerText = data.highlighted;
+            });
+        }
+    </script>
 </body>
 </html>
