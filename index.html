@@ -1,83 +1,85 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Page</title>
-    <style>
-        body {
-            background-color: lightblue;
-            color: black;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            transition: background-color 0.5s;
-        }
+import re
 
-        .dark-mode {
-            background-color: #222;
-        }
+def read_text_file(filepath, encoding="utf-8"):
+    with open(filepath, "r", encoding=encoding) as f:
+        return f.readlines()
 
-        button {
-            padding: 10px 20px;
-            margin: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-        }
+def clean_text(lines):
+    cleaned = []
+    for line in lines:
+        line = line.strip().lower()
+        line = line.replace(",", "").replace(".", "")
+        if line:
+            cleaned.append(line)
+    return cleaned
 
-        #langButton {
-            background-color: green;
-            color: white;
-        }
+def search_text(lines, query):
+    if " AND " in query:
+        terms = query.split(" AND ")
+        return [line for line in lines if all(term in line for term in terms)]
+    elif " OR " in query:
+        terms = query.split(" OR ")
+        return [line for line in lines if any(term in line for term in terms)]
+    elif " NOT " in query:
+        term1, term2 = query.split(" NOT ")
+        return [line for line in lines if term1 in line and term2 not in line]
+    else:
+        pattern = re.compile(re.escape(query), re.IGNORECASE)
+        return [line for line in lines if pattern.search(line)]
 
-        #darkModeButton {
-            background-color: black;
-            color: white;
-        }
+def binary_search(sorted_lines, target):
+    left, right = 0, len(sorted_lines) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if target in sorted_lines[mid]:
+            return True
+        elif target < sorted_lines[mid]:
+            right = mid - 1
+        else:
+            left = mid + 1
+    return False
 
-        h1 {
-            color: black;
-        }
-    </style>
-</head>
-<body>
-    <h1 id="text">I love films</h1>
-    <button id="langButton" onclick="toggleLanguage()">Switch to Russian</button>
-    <button id="darkModeButton" onclick="toggleDarkMode()">Dark Mode</button>
+def print_menu():
+    print("\n--- Menu ---")
+    print("1. Search by keyword or logical expression")
+    print("2. Binary search in sorted text")
+    print("0. Exit")
 
-    <script>
-        let isEnglish = true;
-        let isDarkMode = false;
+def main():
+    file_path = "sample.txt"
+    encoding = "utf-8"
 
-        function toggleLanguage() {
-            let textElement = document.getElementById("text");
-            let langButton = document.getElementById("langButton");
+    try:
+        raw_text = read_text_file(file_path, encoding)
+    except Exception as e:
+        print(f"File read error: {e}")
+        return
 
-            if (isEnglish) {
-                textElement.textContent = "Я люблю фильмы";
-                langButton.textContent = "Switch to English";
-            } else {
-                textElement.textContent = "I love films";
-                langButton.textContent = "Switch to Russian";
-            }
-            isEnglish = !isEnglish;
-        }
+    cleaned_lines = clean_text(raw_text)
 
-        function toggleDarkMode() {
-            document.body.classList.toggle("dark-mode");
-            let darkModeButton = document.getElementById("darkModeButton");
+    while True:
+        print_menu()
+        choice = input("Choose an option: ").strip()
 
-            if (isDarkMode) {
-                darkModeButton.textContent = "Dark Mode";
-            } else {
-                darkModeButton.textContent = "Light Mode";
-            }
-            isDarkMode = !isDarkMode;
-        }
-    </script>
+        if choice == "1":
+            keyword = input("Enter keyword or logical query: ").strip().lower()
+            results = search_text(cleaned_lines, keyword)
+            print("\nResults:")
+            for line in results:
+                print(f"- {line}")
 
-<iframe src="https://docs.google.com/forms/d/e/1FAIpQLScbjA9C5shbueuT9-lWLJieReJXIXGCSaEp5BY3fmk4IzZeTA/viewform?embedded=true" width="640" height="677" frameborder="0" marginheight="0" marginwidth="0">Загрузка…</iframe>
-    
-</body>
-</html>
+        elif choice == "2":
+            keyword = input("Enter word for binary search: ").strip().lower()
+            sorted_lines = sorted(cleaned_lines)
+            found = binary_search(sorted_lines, keyword)
+            print("Found!" if found else "Not found.")
+
+        elif choice == "0":
+            print("Exiting application.")
+            break
+
+        else:
+            print("Invalid input.")
+
+if __name__ == "__main__":
+    main()
