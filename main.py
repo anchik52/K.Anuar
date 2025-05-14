@@ -1,14 +1,19 @@
-from flask import Flask, request, jsonify
-import re
+def search_word(word):
+    results = []
+    try:
+        with open("text.txt", "r", encoding="utf-8") as f:
+            lines = f.readlines()
+            for line in lines:
+                if word.lower() in line.lower():
+                    highlighted = line.replace(word, f"*{word}*")
+                    results.append(highlighted.strip())
+    except Exception as e:
+        results.append(f"Ошибка: {e}")
+    return results
 
-app = Flask(__name__)
 
-@app.route('/highlight', methods=['POST'])
-def highlight_word():
-    text = request.form['text']
-    word = request.form['word']
-    highlighted = re.sub(rf'\b({re.escape(word)})\b', r'*\1*', text, flags=re.IGNORECASE)
-    return jsonify({'highlighted': highlighted})
-
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    word = input("Введите слово для поиска: ")
+    matches = search_word(word)
+    for line in matches:
+        print(line)
