@@ -1,8 +1,29 @@
-import re
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Text Search App</title>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    textarea { width: 100%; height: 200px; }
+    input, button { padding: 0.5em; margin-top: 1em; width: 100%; }
+    pre { background: #f4f4f4; padding: 1em; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Text Search App (Python in Browser)</h1>
 
-def read_text_file(filepath, encoding="utf-8"):
-    with open(filepath, "r", encoding=encoding) as f:
-        return f.readlines()
+  <textarea id="text-input" placeholder="Paste your text here..."></textarea>
+
+  <input type="text" id="query-input" placeholder="Enter search query (AND, OR, NOT) or word">
+  <button onclick="runSearch()">Run Search</button>
+
+  <h3>Results:</h3>
+  <pre id="output"></pre>
+
+  <script type="text/python" id="python-script">
+import re
 
 def clean_text(lines):
     cleaned = []
@@ -26,60 +47,24 @@ def search_text(lines, query):
     else:
         pattern = re.compile(re.escape(query), re.IGNORECASE)
         return [line for line in lines if pattern.search(line)]
+  </script>
 
-def binary_search(sorted_lines, target):
-    left, right = 0, len(sorted_lines) - 1
-    while left <= right:
-        mid = (left + right) // 2
-        if target in sorted_lines[mid]:
-            return True
-        elif target < sorted_lines[mid]:
-            right = mid - 1
-        else:
-            left = mid + 1
-    return False
+  <script>
+    let pyodideReady = loadPyodide();
+    async function runSearch() {
+      let pyodide = await pyodideReady;
+      await pyodide.loadPackagesFromImports(document.getElementById("python-script").text);
+      pyodide.runPython(document.getElementById("python-script").text);
 
-def print_menu():
-    print("\n--- Menu ---")
-    print("1. Search by keyword or logical expression")
-    print("2. Binary search in sorted text")
-    print("0. Exit")
+      let text = document.getElementById("text-input").value;
+      let query = document.getElementById("query-input").value.toLowerCase();
+      let lines = text.split("\n");
 
-def main():
-    file_path = "sample.txt"
-    encoding = "utf-8"
-
-    try:
-        raw_text = read_text_file(file_path, encoding)
-    except Exception as e:
-        print(f"File read error: {e}")
-        return
-
-    cleaned_lines = clean_text(raw_text)
-
-    while True:
-        print_menu()
-        choice = input("Choose an option: ").strip()
-
-        if choice == "1":
-            keyword = input("Enter keyword or logical query: ").strip().lower()
-            results = search_text(cleaned_lines, keyword)
-            print("\nResults:")
-            for line in results:
-                print(f"- {line}")
-
-        elif choice == "2":
-            keyword = input("Enter word for binary search: ").strip().lower()
-            sorted_lines = sorted(cleaned_lines)
-            found = binary_search(sorted_lines, keyword)
-            print("Found!" if found else "Not found.")
-
-        elif choice == "0":
-            print("Exiting application.")
-            break
-
-        else:
-            print("Invalid input.")
-
-if __name__ == "__main__":
-    main()
+      pyodide.globals.set("lines", lines);
+      pyodide.globals.set("query", query);
+      let result = pyodide.runPython(`cleaned = clean_text(lines)\nsearch_text(cleaned, query)`);
+      document.getElementById("output").textContent = result.join("\n");
+    }
+  </script>
+</body>
+</html>
