@@ -2,68 +2,56 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Text Search App</title>
-  <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
+  <title>Text Search App (JavaScript Version)</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 2em; }
-    textarea { width: 100%; height: 200px; }
-    input, button { padding: 0.5em; margin-top: 1em; width: 100%; }
-    pre { background: #f4f4f4; padding: 1em; white-space: pre-wrap; }
+    textarea, input, button { width: 100%; padding: 10px; margin-top: 10px; }
+    pre { background: #f0f0f0; padding: 10px; white-space: pre-wrap; }
   </style>
 </head>
 <body>
-  <h1>Text Search App (Python in Browser)</h1>
+  <h1>Text Search App (JavaScript)</h1>
 
-  <textarea id="text-input" placeholder="Paste your text here..."></textarea>
-
-  <input type="text" id="query-input" placeholder="Enter search query (AND, OR, NOT) or word">
-  <button onclick="runSearch()">Run Search</button>
+  <textarea id="text-input" placeholder="Paste your text here..." rows="10"></textarea>
+  <input id="query-input" type="text" placeholder="Enter search query (e.g., python AND java)">
+  <button onclick="runSearch()">Search</button>
 
   <h3>Results:</h3>
   <pre id="output"></pre>
 
-  <script type="text/python" id="python-script">
-import re
-
-def clean_text(lines):
-    cleaned = []
-    for line in lines:
-        line = line.strip().lower()
-        line = line.replace(",", "").replace(".", "")
-        if line:
-            cleaned.append(line)
-    return cleaned
-
-def search_text(lines, query):
-    if " AND " in query:
-        terms = query.split(" AND ")
-        return [line for line in lines if all(term in line for term in terms)]
-    elif " OR " in query:
-        terms = query.split(" OR ")
-        return [line for line in lines if any(term in line for term in terms)]
-    elif " NOT " in query:
-        term1, term2 = query.split(" NOT ")
-        return [line for line in lines if term1 in line and term2 not in line]
-    else:
-        pattern = re.compile(re.escape(query), re.IGNORECASE)
-        return [line for line in lines if pattern.search(line)]
-  </script>
-
   <script>
-    let pyodideReady = loadPyodide();
-    async function runSearch() {
-      let pyodide = await pyodideReady;
-      await pyodide.loadPackagesFromImports(document.getElementById("python-script").text);
-      pyodide.runPython(document.getElementById("python-script").text);
+    function cleanLine(line) {
+      return line.trim().toLowerCase().replace(/[.,]/g, '');
+    }
 
-      let text = document.getElementById("text-input").value;
-      let query = document.getElementById("query-input").value.toLowerCase();
-      let lines = text.split("\n");
+    function searchText(lines, query) {
+      query = query.trim().toLowerCase();
+      let results = [];
 
-      pyodide.globals.set("lines", lines);
-      pyodide.globals.set("query", query);
-      let result = pyodide.runPython(`cleaned = clean_text(lines)\nsearch_text(cleaned, query)`);
-      document.getElementById("output").textContent = result.join("\n");
+      if (query.includes(" and ")) {
+        let terms = query.split(" and ");
+        results = lines.filter(line => terms.every(term => line.includes(term)));
+      } else if (query.includes(" or ")) {
+        let terms = query.split(" or ");
+        results = lines.filter(line => terms.some(term => line.includes(term)));
+      } else if (query.includes(" not ")) {
+        let [term1, term2] = query.split(" not ");
+        results = lines.filter(line => line.includes(term1) && !line.includes(term2));
+      } else {
+        results = lines.filter(line => line.includes(query));
+      }
+
+      return results;
+    }
+
+    function runSearch() {
+      const textInput = document.getElementById("text-input").value;
+      const query = document.getElementById("query-input").value;
+      const lines = textInput.split("\n").map(cleanLine);
+      const results = searchText(lines, query);
+
+      const output = results.length > 0 ? results.join("\n") : "No matches found.";
+      document.getElementById("output").textContent = output;
     }
   </script>
 </body>
