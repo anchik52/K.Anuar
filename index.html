@@ -48,6 +48,11 @@
       font-weight: bold;
       color: #d9534f;
     }
+    .hint {
+      margin-top: 20px;
+      color: #555;
+      font-style: italic;
+    }
   </style>
 </head>
 <body>
@@ -55,10 +60,12 @@
   <input type="text" id="searchInput" placeholder="Введите слово..." />
   <button onclick="search()">Поиск</button>
   <div class="result" id="result"></div>
+  <div class="hint">Напиши слово <strong>Солнце</strong>, чтобы увидеть весь текст</div>
 
   <script type="text/javascript">
     async function search() {
       const word = document.getElementById('searchInput').value.trim();
+      const resultDiv = document.getElementById('result');
       if (!word) {
         alert("Введите слово для поиска");
         return;
@@ -71,7 +78,6 @@
       const results = lines.filter(line => regex.test(line))
         .map(line => line.replace(regex, '*<span class="highlight">$1</span>*'));
 
-      const resultDiv = document.getElementById('result');
       if (results.length === 0) {
         resultDiv.innerHTML = 'Совпадений не найдено.';
       } else {
@@ -81,4 +87,3 @@
   </script>
 </body>
 </html>
-
