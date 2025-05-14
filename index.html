@@ -1,1 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Поиск слов в тексте</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #f6d365, #fda085);
+      font-family: "Segoe UI", sans-serif;
+      color: #333;
+      text-align: center;
+      padding: 50px;
+    }
+    h1 {
+      color: #444;
+    }
+    input[type="text"] {
+      padding: 10px;
+      font-size: 16px;
+      width: 300px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-left: 10px;
+      border: none;
+      background-color: #ff7e5f;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #eb5e3d;
+    }
+    .result {
+      margin-top: 30px;
+      background-color: #fff8f0;
+      border-radius: 10px;
+      padding: 20px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .highlight {
+      font-weight: bold;
+      color: #d9534f;
+    }
+  </style>
+</head>
+<body>
+  <h1>Поиск слов в тексте</h1>
+  <input type="text" id="searchInput" placeholder="Введите слово..." />
+  <button onclick="search()">Поиск</button>
+  <div class="result" id="result"></div>
+
+  <script type="text/javascript">
+    async function search() {
+      const word = document.getElementById('searchInput').value.trim();
+      if (!word) {
+        alert("Введите слово для поиска");
+        return;
+      }
+
+      const response = await fetch('text.txt');
+      const text = await response.text();
+      const lines = text.split('\n');
+      const regex = new RegExp(`(${word})`, 'gi');
+      const results = lines.filter(line => regex.test(line))
+        .map(line => line.replace(regex, '*<span class="highlight">$1</span>*'));
+
+      const resultDiv = document.getElementById('result');
+      if (results.length === 0) {
+        resultDiv.innerHTML = 'Совпадений не найдено.';
+      } else {
+        resultDiv.innerHTML = results.map(r => `<p>${r}</p>`).join('');
+      }
+    }
+  </script>
+</body>
+</html>
 
