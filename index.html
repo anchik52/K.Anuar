@@ -4,14 +4,56 @@
     <meta charset="UTF-8">
     <title>Подсветка слова</title>
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background: #d3f6d1; }
-        textarea, input { width: 100%; margin-top: 10px; padding: 8px; font-size: 16px; }
-        button { margin-top: 10px; padding: 10px 20px; font-size: 16px; }
-        #result { margin-top: 20px; white-space: pre-wrap; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            padding: 40px;
+            background-color: #f5f5dc;
+            color: #4b3f2f;
+        }
+
+        h2 {
+            color: #5a4a3b;
+        }
+
+        textarea, input {
+            width: 100%;
+            margin-top: 10px;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #d6c9b8;
+            background-color: #fffaf0;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #e6d3b3;
+            border: none;
+            border-radius: 5px;
+            color: #4b3f2f;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #d4bea0;
+        }
+
+        #result {
+            margin-top: 25px;
+            background-color: #fffaf0;
+            border: 1px solid #d6c9b8;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
     </style>
 </head>
 <body>
-    <h2>Загрузите текст и подсветите слово</h2>
+    <h2>Подсветка слова в тексте</h2>
     <textarea id="text" rows="10" placeholder="Введите текст..."></textarea>
     <input type="text" id="word" placeholder="Введите слово...">
     <button onclick="highlight()">Подсветить</button>
