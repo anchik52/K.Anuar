@@ -11,9 +11,11 @@
       text-align: center;
       padding: 50px;
     }
+
     h1 {
       color: #444;
     }
+
     input[type="text"] {
       padding: 10px;
       font-size: 16px;
@@ -21,6 +23,7 @@
       border-radius: 8px;
       border: 1px solid #ccc;
     }
+
     button {
       padding: 10px 20px;
       font-size: 16px;
@@ -31,9 +34,11 @@
       border-radius: 8px;
       cursor: pointer;
     }
+
     button:hover {
       background-color: #eb5e3d;
     }
+
     .result {
       margin-top: 30px;
       background-color: #fff8f0;
@@ -44,13 +49,23 @@
       margin-right: auto;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
+
     .highlight {
       font-weight: bold;
       color: #d9534f;
     }
-    .hint {
-      margin-top: 20px;
-      color: #555;
+
+    .hint-fixed {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 18px;
+      color: #333;
+      background-color: rgba(255, 255, 255, 0.7);
+      padding: 15px 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
       font-style: italic;
     }
   </style>
@@ -59,8 +74,12 @@
   <h1>Поиск слов в тексте</h1>
   <input type="text" id="searchInput" placeholder="Введите слово..." />
   <button onclick="search()">Поиск</button>
+
   <div class="result" id="result"></div>
-  <div class="hint">Напиши слово <strong>Солнце</strong>, чтобы увидеть весь текст</div>
+
+  <div class="hint-fixed">
+    Напиши слово <strong>Солнце</strong>, чтобы увидеть весь текст
+  </div>
 
   <script type="text/javascript">
     async function search() {
@@ -87,3 +106,4 @@
   </script>
 </body>
 </html>
+
